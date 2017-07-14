@@ -116,20 +116,16 @@ print toucan
 
 
 GATEWAY_IP = raw_input("Enter your Gateway IP: \n")
+print"[*] Gateway Locked in..."
 
 interface = raw_input("\nEnter your network interface: \n")
+print"[*] Interface configured..."
 
 n_range = raw_input("\nEnter your network range to scan in format 10.0.0.1/24: \n")
+print"[*] Network Range set...
 
-print"[*] Gateway Locked in..."
-time.sleep(.5)
-print"[*] Interface configured..."
-time.sleep(.5)
-print"[*] Network Range set..."
-time.sleep(.5)
 print"[*] Commensing..."
 print"\n"
-time.sleep(1)
 
 
 #this option parser will be put into use eventually, not even sure if it is needed. Could be a fun feature though
