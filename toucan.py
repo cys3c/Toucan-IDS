@@ -1,6 +1,6 @@
 
 #-------------------------
-# Toucan (WIDS) 
+# Toucan WIDS 
 # Author: Collin Sullivan
 # Year: 2017
 # Version: 0.0.1
@@ -95,7 +95,7 @@ toucan = """\033[95m
                                                    -s+yyso:+o-```````````````
                                                     osssyoo:/o.               
                                                     :o+osys+:o/                        .....-://oo/---////:.////:.////:.
-                                                    .s/oyyyo+/o-                        ``..-. TOUCAN Wireless Intrusion Detection System
+                                                    .s/oyyyo+/o-                        ``..-. TOUCAN NETWORK DEFENDER
                                                      -+/+yho+o++.                            `+o///---////:.////:.////:.
                                                      .+/+hhs//s:`                             
                                                       //ohyys:oo`
@@ -109,21 +109,24 @@ toucan = """\033[95m
                                                           `.+/os++"                              "The world is a jungle in general, and the
                                                            `-//:-.                               networking game contributes many animals."
 """
-os.system("espeak 'Welcome to Too can'")
-
+os.system("espeak 'Welcome to Toucan Network Defender'")
 
 print toucan
 
+counter = 0
 
 GATEWAY_IP = raw_input("Enter your Gateway IP: \n")
-print"[*] Gateway Locked in..."
 
 interface = raw_input("\nEnter your network interface: \n")
-print"[*] Interface configured..."
 
 n_range = raw_input("\nEnter your network range to scan in format 10.0.0.1/24: \n")
-print"[*] Network Range set...
 
+print"[*] Gateway Locked in..."
+time.sleep(.5)
+print"[*] Interface configured..."
+time.sleep(.5)
+print"[*] Network Range set..."
+time.sleep(.5)
 print"[*] Commensing..."
 print"\n"
 
@@ -168,14 +171,15 @@ def arping(iprange="%s" % n_range):
         print elem
 
  
-def arp_display(pkt):
+def arp_display(packet):
 
-    if pkt[ARP].op == 1: 
-        return 'Request: %s is asking about %s' % (pkt[ARP].psrc, pkt[ARP].pdst)
-    if pkt[ARP].op == 2: 
-        return 'Response: %s has address %s' % (pkt[ARP].hwsrc, pkt[ARP].psrc)
- 
+    if packet[ARP].op == 1: 
+        return '[*] Probe- %s is asking about %s' % (packet[ARP].psrc, packet[ARP].pdst)
+    if packet[ARP].op == 2: 
+        return '[*] Response- %s L3 address is %s' % (packet[ARP].hwsrc, packet[ARP].psrc)
+
     sniff(prn=arp_display, filter="arp", store=0, count=10)
+
 
 
 def get_mac_gateway(ip_address):
@@ -188,6 +192,25 @@ def get_mac_gateway(ip_address):
     return None
 
 
+def deauth_attacker(GATEWAY_MAC):
+
+  conf.iface = interface
+  bssid = GATEWAY_MAC
+  # need to somehow attach the attackers mac to attacker_L2
+  hacker = attacker_L2
+  count = 77
+
+  conf.verb = 0 
+
+  packet = RadioTap()/Dot11(type=0,subtype=12,addr1=hacker,addr2=bssid,addr3=bssid)/Dot11Deauth(reason=7) 
+
+  for n in range(int(count)):
+
+    sendp(packet)
+
+    print 'DEAUTH SENT ' + conf.iface + ' to BSSID: ' + bssid + ' to kick attacker: ' + hacker + 'off network.'
+
+
 
 if __name__ == '__main__':
 
@@ -198,5 +221,4 @@ if __name__ == '__main__':
     arping()
 
     sniff(filter = "arp", prn = arp_display)
-        
-
+    
