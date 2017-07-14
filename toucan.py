@@ -1,6 +1,6 @@
 
 #-------------------------
-# Toucan WIDS 
+# Toucan (WIDS) 
 # Author: Collin Sullivan
 # Year: 2017
 # Version: 0.0.1
@@ -95,7 +95,7 @@ toucan = """\033[95m
                                                    -s+yyso:+o-```````````````
                                                     osssyoo:/o.               
                                                     :o+osys+:o/                        .....-://oo/---////:.////:.////:.
-                                                    .s/oyyyo+/o-                        ``..-. TOUCAN NETWORK DEFENDER
+                                                    .s/oyyyo+/o-                        ``..-. TOUCAN Wireless Intrusion Detection System
                                                      -+/+yho+o++.                            `+o///---////:.////:.////:.
                                                      .+/+hhs//s:`                             
                                                       //ohyys:oo`
@@ -109,7 +109,7 @@ toucan = """\033[95m
                                                           `.+/os++"                              "The world is a jungle in general, and the
                                                            `-//:-.                               networking game contributes many animals."
 """
-os.system("espeak 'Welcome to Toucan Network Defender'")
+os.system("espeak 'Welcome to Too can'")
 
 
 print toucan
