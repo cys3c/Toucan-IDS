@@ -3,7 +3,7 @@
 # Toucan WIDS 
 # Author: Collin Sullivan
 # Year: 2017
-# Version: 0.0.1
+# Version: in the works!
 #-------------------------
 
 #--------------------------------------------------------------------------------------------------------------------------------
@@ -116,10 +116,13 @@ print toucan
 counter = 0
 
 GATEWAY_IP = raw_input("Enter your Gateway IP: \n")
+logging.info('Gateway IP: %s' % GATEWAY_IP)
 
 interface = raw_input("\nEnter your network interface: \n")
+logging.info('Interface: %s' interface)
 
-n_range = raw_input("\nEnter your network range to scan in format 10.0.0.1/24: \n")
+n_range = raw_input("\nEnter your network range to defend (in format 10.0.0.1/24): \n")
+logging.info('Network range to defend: %s' % n_range)
 
 print"[*] Gateway Locked in..."
 time.sleep(.2)
@@ -156,6 +159,8 @@ def processParams(self, inputs):
 
 def arping(iprange="%s" % n_range):
 
+    logging.info('Sending ARPs to network range %s' % n_range)
+
     ans, unans = srp(Ether(dst="ff:ff:ff:ff:ff:ff")/ARP(pdst=iprange), timeout=5)
 
     collection = []
@@ -174,9 +179,16 @@ def arping(iprange="%s" % n_range):
 def arp_display(packet):
 
     if packet[ARP].op == 1: 
+
         return '[*] Probe- %s is asking about %s' % (packet[ARP].psrc, packet[ARP].pdst)
+
+        logging.info('[*] Probe- %s is asking about %s' % (packet[ARP].psrc, packet[ARP].pdst))
+
     if packet[ARP].op == 2: 
+
         return '[*] Response- %s L3 address is %s' % (packet[ARP].hwsrc, packet[ARP].psrc)
+
+        logging.info('[*] Response- %s L3 address is %s' % (packet[ARP].hwsrc, packet[ARP].psrc))
 
     sniff(prn=arp_display, filter="arp", store=0, count=10)
 
@@ -191,6 +203,8 @@ def get_mac_gateway(ip_address):
         return r[Ether].src
     return None
 
+    logging.info('Gateway Layer 2 address is: %s' % r[Ether].src)
+
 
 def deauth_attacker(GATEWAY_MAC):
 
@@ -203,6 +217,8 @@ def deauth_attacker(GATEWAY_MAC):
   conf.verb = 0 
 
   packet = RadioTap()/Dot11(type=0,subtype=12,addr1=hacker,addr2=bssid,addr3=bssid)/Dot11Deauth(reason=7) 
+
+  logging.info('Intruder at %s is being kicked off network' % hacker)
 
   for n in range(int(count)):
 
@@ -222,4 +238,3 @@ if __name__ == '__main__':
 
     sniff(filter = "arp", prn = arp_display)
         
-
