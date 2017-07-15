@@ -133,7 +133,7 @@ print"\n"
 
 #this option parser will be put into use eventually, not even sure if it is needed. Could be a fun feature though
 
-class MikasaOptionParser(OptionParser):
+class ToucanOptionParser(OptionParser):
 
     def __init__(self):
 
