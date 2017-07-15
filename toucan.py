@@ -95,7 +95,7 @@ toucan = """\033[95m
                                                    -s+yyso:+o-```````````````
                                                     osssyoo:/o.               
                                                     :o+osys+:o/                        .....-://oo/---////:.////:.////:.
-                                                    .s/oyyyo+/o-                        ``..-. TOUCAN NETWORK DEFENDER
+                                                    .s/oyyyo+/o-                        ``..-. TOUCAN WIRELESS INTRUSION DETECTION SYSTEM
                                                      -+/+yho+o++.                            `+o///---////:.////:.////:.
                                                      .+/+hhs//s:`                             
                                                       //ohyys:oo`
@@ -122,11 +122,11 @@ interface = raw_input("\nEnter your network interface: \n")
 n_range = raw_input("\nEnter your network range to scan in format 10.0.0.1/24: \n")
 
 print"[*] Gateway Locked in..."
-time.sleep(.5)
+time.sleep(.2)
 print"[*] Interface configured..."
-time.sleep(.5)
+time.sleep(.2)
 print"[*] Network Range set..."
-time.sleep(.5)
+time.sleep(.2)
 print"[*] Commensing..."
 print"\n"
 
@@ -221,4 +221,5 @@ if __name__ == '__main__':
     arping()
 
     sniff(filter = "arp", prn = arp_display)
-    
+        
+
