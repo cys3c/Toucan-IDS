@@ -190,11 +190,11 @@ def arp_display(packet):
         logging.info('[*] Response- %s L3 address is %s' % (packet[ARP].hwsrc, packet[ARP].psrc))
 
         return '[*] Response- %s L3 address is %s' % (packet[ARP].hwsrc, packet[ARP].psrc)
-
-
-
-#    sniff(prn=arp_display, filter="arp", store=0, count=10)
-
+      
+#   psuedo code---------------------------------------------
+#   if hacker_is_found:
+#       attacker_L2 = '%s' % attacker_ARP_hwsrc
+#-----------------------------------------------------------
 
 def detect_deauth(deauth_packet):
 
@@ -218,7 +218,7 @@ def get_mac_gateway(ip_address):
     logging.info('Gateway Layer 2 address is: %s' % r[Ether].src)
 
 
-def deauth_attacker(GATEWAY_MAC):
+def defensive_arps(GATEWAY_MAC, attacker_L2):
 
   conf.iface = interface
   bssid = GATEWAY_MAC
