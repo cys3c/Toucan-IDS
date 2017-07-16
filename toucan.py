@@ -133,7 +133,7 @@ print"[*] Commensing..."
 print"\n"
 
 
-#this option parser will be put into use eventually, not even sure if it is needed. Could be a fun feature though
+#this option parser will be put into use eventually...
 
 class ToucanOptionParser(OptionParser):
 
@@ -142,7 +142,7 @@ class ToucanOptionParser(OptionParser):
         OptionParser.__init__(self)
 
         self.add_option('--ScanHosts', help='Scans for all L2 + L3 addresses on network')
-        self.add_option('--DefendHosts', help='Defends Hosts on Network', dest="TargetPort", default=445, type='int')
+        self.add_option('--DH', help='Defends Hosts on Network')
 
 
 def processParams(self, inputs):
