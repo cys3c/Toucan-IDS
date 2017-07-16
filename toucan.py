@@ -110,8 +110,11 @@ toucan = """\033[34m
 os.system("espeak 'Welcome to Toucan Network Defender'")
 
 print toucan
-print (time.strftime("%I:%M:%S"))
-print (time.strftime("%d/%m/%Y\n"))
+
+time_current = time.strftime("%I:%M:%S")
+logging.info('%s' % time_current)
+date_current = time.strftime("%d/%m/%Y\n")
+logging.info('%s' % date_current)
 
 print """
 Toucan is a Wireless Intrusion Detection System written in python. Capabilities include scanning and defending hosts
@@ -126,7 +129,7 @@ attacker_L2 = ''
 GATEWAY_IP = raw_input("Enter your Gateway IP: ")
 logging.info('Gateway IP: %s' % GATEWAY_IP)
 
-interface = raw_input("\nEnter your network interface: ")
+interface = raw_input("\nEnter your Network Interface: ")
 logging.info('Interface: %s' % interface)
 
 n_range = raw_input("\nEnter your network range to defend (in format 10.0.0.1/24): ")
@@ -188,6 +191,8 @@ def arp_network_range(iprange="%s" % n_range):
     for snd, rcv in ans:
 
         result = rcv.sprintf(r"%ARP.psrc% %Ether.src%").split()
+
+        logging.info('%s' % result)
         
         collection.append(result)
 
