@@ -1,4 +1,3 @@
-
 #-------------------------
 # Toucan WIDS 
 # Author: Collin Sullivan
@@ -119,7 +118,7 @@ GATEWAY_IP = raw_input("Enter your Gateway IP: \n")
 logging.info('Gateway IP: %s' % GATEWAY_IP)
 
 interface = raw_input("\nEnter your network interface: \n")
-logging.info('Interface: %s' interface)
+logging.info('Interface: %s' % interface)
 
 n_range = raw_input("\nEnter your network range to defend (in format 10.0.0.1/24): \n")
 logging.info('Network range to defend: %s' % n_range)
@@ -190,7 +189,16 @@ def arp_display(packet):
 
         logging.info('[*] Response- %s L3 address is %s' % (packet[ARP].hwsrc, packet[ARP].psrc))
 
-    sniff(prn=arp_display, filter="arp", store=0, count=10)
+#    sniff(prn=arp_display, filter="arp", store=0, count=10)
+
+
+def detect_deauth(deauth_packet):
+
+  if deauth_packet.haslayer(Dot11) and deauth_packet.type == 0 and deauth_packet.subtype == 0xC:
+
+    print "DEAUTH DETECTED: %s" % (deauth_packet.summary())
+
+    logging.info('Deauth flood detected. Responding...')
 
 
 
@@ -227,7 +235,6 @@ def deauth_attacker(GATEWAY_MAC):
     print 'DEAUTH SENT ' + conf.iface + ' to BSSID: ' + bssid + ' to kick attacker: ' + hacker + 'off network.'
 
 
-
 if __name__ == '__main__':
 
     GATEWAY_MAC = get_mac_gateway(GATEWAY_IP)
@@ -238,3 +245,7 @@ if __name__ == '__main__':
 
     sniff(filter = "arp", prn = arp_display)
         
+    sniff(iface="%s" % interface, prn = detect_deauth)
+
+
+    
