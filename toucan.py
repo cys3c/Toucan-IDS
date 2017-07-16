@@ -42,17 +42,16 @@ from scapy.all import Ether, ARP, conf
 import os
 import sys
 import threading
+from threading import Thread
 from optparse import OptionParser
 import signal
 from struct import *
-from termcolor import colored, cprint
 import time
-import termcolor
+import pyshark
+
 logging.basicConfig(filename='toucan.log',level=logging.DEBUG)
 
-
-
-toucan = """\033[95m
+toucan = """\033[34m
                                                                                                         ............
                                                                                                 ..............-.-----.
                                          .-.                                               ..--.........:---:-------:-
@@ -111,16 +110,26 @@ toucan = """\033[95m
 os.system("espeak 'Welcome to Toucan Network Defender'")
 
 print toucan
+print (time.strftime("%I:%M:%S"))
+print (time.strftime("%d/%m/%Y\n"))
+
+print """
+Toucan is a Wireless Intrusion Detection System written in python. Capabilities include scanning and defending hosts
+on a network by actively monitoring traffic for both man in the middle and deauthentication attacks. This program is
+not to be used on an unauthorized network and the creator is not responsible for any damage done. Using this program
+means you understand and agree to these conditions.
+"""
 
 counter = 0
+attacker_L2 = ''
 
-GATEWAY_IP = raw_input("Enter your Gateway IP: \n")
+GATEWAY_IP = raw_input("Enter your Gateway IP: ")
 logging.info('Gateway IP: %s' % GATEWAY_IP)
 
-interface = raw_input("\nEnter your network interface: \n")
+interface = raw_input("\nEnter your network interface: ")
 logging.info('Interface: %s' % interface)
 
-n_range = raw_input("\nEnter your network range to defend (in format 10.0.0.1/24): \n")
+n_range = raw_input("\nEnter your network range to defend (in format 10.0.0.1/24): ")
 logging.info('Network range to defend: %s' % n_range)
 
 print"[*] Gateway Locked in..."
@@ -134,6 +143,18 @@ print"\n"
 
 
 #this option parser will be put into use eventually...
+
+class colors:
+
+    Red='\033[31m'
+    Green='\033[32m'
+    Yellow='\033[33m'
+    Blue='\033[34m'
+    Pink='\033[35m'
+    Cyan='\033[36m'
+    White='\033[37m'
+    SBlack='\033[0;30m'
+
 
 class ToucanOptionParser(OptionParser):
 
@@ -156,7 +177,7 @@ def processParams(self, inputs):
                return
 
 
-def arping(iprange="%s" % n_range):
+def arp_network_range(iprange="%s" % n_range):
 
     logging.info('Sending ARPs to network range %s' % n_range)
 
@@ -179,11 +200,9 @@ def arp_display(packet):
 
     if packet[ARP].op == 1: 
 
-        logging.info('[*] Probe- %s is asking about %s' % (packet[ARP].psrc, packet[ARP].pdst))
+        logging.info('[*] Probe- %s is asking for L2 of %s' % (packet[ARP].psrc, packet[ARP].pdst))
 
-        return '[*] Probe- %s is asking about %s' % (packet[ARP].psrc, packet[ARP].pdst)
-
-
+        return '[*] Probe- %s is asking for L2 of %s' % (packet[ARP].psrc, packet[ARP].pdst)
 
     if packet[ARP].op == 2: 
 
@@ -192,7 +211,7 @@ def arp_display(packet):
         return '[*] Response- %s L3 address is %s' % (packet[ARP].hwsrc, packet[ARP].psrc)
       
 #   psuedo code---------------------------------------------
-#   if hacker_is_found:
+#   if hacker_is_found: (ARP policy violated)
 #       attacker_L2 = '%s' % attacker_ARP_hwsrc
 #-----------------------------------------------------------
 
@@ -202,7 +221,7 @@ def detect_deauth(deauth_packet):
 
     print "DEAUTH DETECTED: %s" % (deauth_packet.summary())
 
-    logging.info('Deauth flood detected. Responding...')
+    logging.warning('Deauth detected. Responding...')
 
 
 
@@ -218,14 +237,13 @@ def get_mac_gateway(ip_address):
     logging.info('Gateway Layer 2 address is: %s' % r[Ether].src)
 
 
-def defensive_arps(GATEWAY_MAC, attacker_L2):
+def defensive_arps(GATEWAY_MAC):
 
   conf.iface = interface
-  bssid = GATEWAY_MAC
-  # need to somehow attach the attackers mac to attacker_L2
+  bssid = GATEWAY_MAC 
+#  global attacker_L2
   hacker = attacker_L2
   count = 77
-
   conf.verb = 0 
 
   packet = RadioTap()/Dot11(type=0,subtype=12,addr1=hacker,addr2=bssid,addr3=bssid)/Dot11Deauth(reason=7) 
@@ -235,8 +253,18 @@ def defensive_arps(GATEWAY_MAC, attacker_L2):
   for n in range(int(count)):
 
     sendp(packet)
-
     print 'Removing malicious host at:' + hacker + 'off of network.'
+
+
+def monitor_traffic():
+
+  monitor = pyshark.LiveCapture(interface='%s' % interface)
+
+  monitor.sniff(timeout=50)
+
+  for packet in monitor.sniff_continuously(packet_count=5):
+
+    print 'Traffic detected: ', packet
 
 
 if __name__ == '__main__':
@@ -245,7 +273,10 @@ if __name__ == '__main__':
 
     print "[*] Gateway %s is at %s" % (GATEWAY_IP, GATEWAY_MAC)
 
-    arping()
+#   Thread(target = arping).start()
+#   Thread(target = monitor_traffic).start()
+
+    arp_network_range()
 
     sniff(filter = "arp", prn = arp_display)
         
