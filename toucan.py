@@ -230,18 +230,14 @@ def na_packet_discovery(neighbor_adv_packet):
 
     logging.info('Neighbor advertisement discovered: %s' % (neighbor_adv_packet.summary()))
 
-    return '[*] Neighbor Advertisement: %s' % (neighbor_adv_packet[ICMPv6ND_NA].hwsrc, neighbor_adv_packet[ICMPv6ND_NA].psrc)
-
 
 def ns_packet_discovery(neighbor_sol_packet):
 
-  if neighbor_sol_packet.haslayer(IPv6) and neighbor_adv_packet.haslayer(ICMPv6ND_NS):
+  if neighbor_sol_packet.haslayer(IPv6) and neighbor_sol_packet.haslayer(ICMPv6ND_NS):
 
-  print "Neighbor solicitation discovered: %s" % (neighbor_sol_packet.summary())
+    print "Neighbor solicitation discovered: %s" % (neighbor_sol_packet.summary())  
 
-  logging.info('Neighbor solicitation discovered: %s' % (neighbor_sol_packet.summary()))  
-
-  return '[*] Neighbor Solicitationt: %s' % (neighbor_sol_packet[ICMPv6ND_NS].hwsrc, neighbor_sol_packet[ICMPv6ND_NS].psrc)
+    logging.info('Neighbor solicitation discovered: %s' % (neighbor_sol_packet.summary()))    
 
 
 def detect_deauth(deauth_packet):
@@ -302,17 +298,13 @@ if __name__ == '__main__':
 
     print "[*] Gateway %s is at %s" % (GATEWAY_IP, GATEWAY_MAC)
 
-#   Thread(target = arping).start()
-#   Thread(target = monitor_traffic).start()
-
     arp_network_range()
 
     sniff(filter = "arp", prn = arp_display)
 
     sniff(iface="%s" % interface, prn = detect_deauth)
 
-    sniff(filter = "arp", prn = ns_packet_discovery)
+    sniff(iface="%s" % interface, prn = ns_packet_discovery)
 
     sniff(iface="%s" % interface, prn = na_packet_discovery)
 
-    
