@@ -147,16 +147,16 @@ print"\n"
 
 #this option parser will be put into use eventually...
 
-class colors:
+class perty_colors:
 
-    Red='\033[31m'
-    Green='\033[32m'
-    Yellow='\033[33m'
-    Blue='\033[34m'
-    Pink='\033[35m'
-    Cyan='\033[36m'
-    White='\033[37m'
-    SBlack='\033[0;30m'
+    Red ='\033[31m'
+    Green ='\033[32m'
+    Yellow ='\033[33m'
+    Blue ='\033[34m'
+    Pink ='\033[35m'
+    Cyan ='\033[36m'
+    White ='\033[37m'
+    SBlack ='\033[0;30m'
 
 
 class ToucanOptionParser(OptionParser):
@@ -215,10 +215,34 @@ def arp_display(packet):
 
         return '[*] Response- %s L3 address is %s' % (packet[ARP].hwsrc, packet[ARP].psrc)
       
+
 #   psuedo code---------------------------------------------
 #   if hacker_is_found: (ARP policy violated)
 #       attacker_L2 = '%s' % attacker_ARP_hwsrc
 #-----------------------------------------------------------
+
+
+def na_packet_discovery(neighbor_adv_packet):
+
+  if neighbor_adv_packet.haslayer(IPv6) and neighbor_adv_packet.haslayer(ICMPv6ND_NA):
+
+    print "Neighbor advertisement discovered: %s" % (neighbor_adv_packet.summary())
+
+    logging.info('Neighbor advertisement discovered: %s' % (neighbor_adv_packet.summary()))
+
+    return '[*] Neighbor Advertisement: %s' % (neighbor_adv_packet[ICMPv6ND_NA].hwsrc, neighbor_adv_packet[ICMPv6ND_NA].psrc)
+
+
+def ns_packet_discovery(neighbor_sol_packet):
+
+  if neighbor_sol_packet.haslayer(IPv6) and neighbor_adv_packet.haslayer(ICMPv6ND_NS):
+
+  print "Neighbor solicitation discovered: %s" % (neighbor_sol_packet.summary())
+
+  logging.info('Neighbor solicitation discovered: %s' % (neighbor_sol_packet.summary()))  
+
+  return '[*] Neighbor Solicitationt: %s' % (neighbor_sol_packet[ICMPv6ND_NS].hwsrc, neighbor_sol_packet[ICMPv6ND_NS].psrc)
+
 
 def detect_deauth(deauth_packet):
 
@@ -284,5 +308,11 @@ if __name__ == '__main__':
     arp_network_range()
 
     sniff(filter = "arp", prn = arp_display)
-        
+
     sniff(iface="%s" % interface, prn = detect_deauth)
+
+    sniff(filter = "arp", prn = ns_packet_discovery)
+
+    sniff(iface="%s" % interface, prn = na_packet_discovery)
+
+    
