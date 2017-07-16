@@ -1,11 +1,3 @@
-INFO:root:['192.168.0.1', '90:9d:7d:8a:db:fc']
-INFO:root:90:9d:7d:8a:db:fc
-INFO:root:Gateway IP: 192.168.0.1
-INFO:root:Interface: enp5s0
-INFO:root:Network range to defend: 192.168.0.0/24
-INFO:root:Sending ARPs to network range 192.168.0.0/24
-INFO:root:Gateway IP: 192.168.0.1
-INFO:root:Interface: enp5s0
 INFO:root:Network range to defend: 192.168.0.0/24
 INFO:root:Sending ARPs to network range 192.168.0.0/24
 INFO:root:Gateway IP: 192.168.0.1
