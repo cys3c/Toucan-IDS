@@ -236,7 +236,7 @@ def defensive_arps(GATEWAY_MAC, attacker_L2):
 
     sendp(packet)
 
-    print 'DEAUTH SENT ' + conf.iface + ' to BSSID: ' + bssid + ' to kick attacker: ' + hacker + 'off network.'
+    print 'Removing malicious host at:' + hacker + 'off of network.'
 
 
 if __name__ == '__main__':
