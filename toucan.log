@@ -2,6 +2,9 @@ INFO:root:Gateway IP: 192.168.0.1
 INFO:root:Interface: enp5s0
 INFO:root:Network range to defend: 192.168.0.0/24
 INFO:root:Sending ARPs to network range 192.168.0.0/24
+INFO:root:['192.168.0.7', '20:89:84:ef:cc:d3']
+INFO:root:['192.168.0.8', '20:89:84:ef:cc:d3']
+INFO:root:['192.168.0.1', '90:9d:7d:8a:db:fc']
 INFO:root:[*] Probe- 192.168.0.1 is asking about 192.168.0.2
 INFO:root:[*] Response- d8:cb:8a:75:78:8c L3 address is 192.168.0.2
 INFO:root:[*] Probe- 192.168.0.2 is asking about 192.168.0.0
