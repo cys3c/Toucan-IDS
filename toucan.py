@@ -179,15 +179,19 @@ def arp_display(packet):
 
     if packet[ARP].op == 1: 
 
+        logging.info('[*] Probe- %s is asking about %s' % (packet[ARP].psrc, packet[ARP].pdst))
+
         return '[*] Probe- %s is asking about %s' % (packet[ARP].psrc, packet[ARP].pdst)
 
-        logging.info('[*] Probe- %s is asking about %s' % (packet[ARP].psrc, packet[ARP].pdst))
+
 
     if packet[ARP].op == 2: 
 
+        logging.info('[*] Response- %s L3 address is %s' % (packet[ARP].hwsrc, packet[ARP].psrc))
+
         return '[*] Response- %s L3 address is %s' % (packet[ARP].hwsrc, packet[ARP].psrc)
 
-        logging.info('[*] Response- %s L3 address is %s' % (packet[ARP].hwsrc, packet[ARP].psrc))
+
 
 #    sniff(prn=arp_display, filter="arp", store=0, count=10)
 
@@ -246,6 +250,3 @@ if __name__ == '__main__':
     sniff(filter = "arp", prn = arp_display)
         
     sniff(iface="%s" % interface, prn = detect_deauth)
-
-
-    
