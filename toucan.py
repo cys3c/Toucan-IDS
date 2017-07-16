@@ -125,6 +125,9 @@ means you understand and agree to these conditions.
 
 counter = 0
 attacker_L2 = ''
+attacker_MAC = ''
+victim_MAC = ''
+victim_L3 = ''
 
 GATEWAY_IP = raw_input("Enter your Gateway IP: ")
 logging.info('Gateway IP: %s' % GATEWAY_IP)
@@ -144,9 +147,6 @@ time.sleep(.2)
 print"[*] Commensing..."
 print"\n"
 
-
-#this option parser will be put into use eventually...
-
 class perty_colors:
 
     Red ='\033[31m'
@@ -158,6 +158,7 @@ class perty_colors:
     White ='\033[37m'
     SBlack ='\033[0;30m'
 
+#this option parser will be put into use eventually...
 
 class ToucanOptionParser(OptionParser):
 
@@ -262,7 +263,29 @@ def get_mac_gateway(ip_address):
     logging.info('Gateway Layer 2 address is: %s' % r[Ether].src)
 
 
-def defensive_arps(GATEWAY_MAC):
+def defenseive_arps(GATEWAY_IP, GATEWAY_MAC, victim_L3, victim_MAC):
+
+    un_poison_victim = ARP()
+    un_poison_victim.op = 2
+    un_poison_victim.psrc = gateway_ip
+    un_poison_victim.pdst = victim_L3
+    un_poison_victim.hwdst = GATEWAY_MAC
+
+    un_poison_gateway = ARP()
+    un_poison_gateway.op = 2
+    un_poison_gateway.psrc = victim_L3
+    un_poison_gateway.pdst = gateway_ip
+    un_poison_gateway.hwdst = victim_MAC
+
+    while 1:
+        try:
+            send(un_poison_victim)
+            send(un_poison_gateway)
+            time.sleep(2)
+        return
+
+
+def defensive_deauth(GATEWAY_MAC):
 
   conf.iface = interface
   bssid = GATEWAY_MAC 
@@ -300,6 +323,8 @@ if __name__ == '__main__':
 
     arp_network_range()
 
+    #add multithreading
+
     sniff(filter = "arp", prn = arp_display)
 
     sniff(iface="%s" % interface, prn = detect_deauth)
@@ -307,4 +332,3 @@ if __name__ == '__main__':
     sniff(iface="%s" % interface, prn = ns_packet_discovery)
 
     sniff(iface="%s" % interface, prn = na_packet_discovery)
-
