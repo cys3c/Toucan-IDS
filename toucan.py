@@ -223,7 +223,7 @@ def arp_display(packet):
 #-----------------------------------------------------------
 
 
-def na_packet_discovery(neighbor_adv_packet):
+def neighboradvertisement_packet_discovery(neighbor_adv_packet):
 
   if neighbor_adv_packet.haslayer(IPv6) and neighbor_adv_packet.haslayer(ICMPv6ND_NA):
 
@@ -232,7 +232,7 @@ def na_packet_discovery(neighbor_adv_packet):
     logging.info('Neighbor advertisement discovered: %s' % (neighbor_adv_packet.summary()))
 
 
-def ns_packet_discovery(neighbor_sol_packet):
+def neightborsolicitation_packet_discovery(neighbor_sol_packet):
 
   if neighbor_sol_packet.haslayer(IPv6) and neighbor_sol_packet.haslayer(ICMPv6ND_NS):
 
@@ -329,6 +329,6 @@ if __name__ == '__main__':
 
     sniff(iface="%s" % interface, prn = detect_deauth)
 
-    sniff(iface="%s" % interface, prn = ns_packet_discovery)
+    sniff(iface="%s" % interface, prn = neighborsolicitaion_packet_discovery)
 
-    sniff(iface="%s" % interface, prn = na_packet_discovery)
+    sniff(iface="%s" % interface, prn = neighboradvertisement_packet_discovery)
