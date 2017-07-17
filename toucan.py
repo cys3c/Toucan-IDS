@@ -31,7 +31,6 @@
 
 #--------------------------------------------------------------------------------------------------------------------------------
 
-
 import logging
 import socket, sys
 from scapy.all import *
@@ -158,28 +157,6 @@ class perty_colors:
     White ='\033[37m'
     SBlack ='\033[0;30m'
 
-#this option parser will be put into use eventually...
-
-class ToucanOptionParser(OptionParser):
-
-    def __init__(self):
-
-        OptionParser.__init__(self)
-
-        self.add_option('--ScanHosts', help='Scans for all L2 + L3 addresses on network')
-        self.add_option('--DH', help='Defends Hosts on Network')
-
-
-def processParams(self, inputs):
-
-           options, args = self.parser.parse_args(inputs) 
-           
-           if options.ScanHosts ==  "" or options.TargetPort > 65535:
-
-               print "[+] Scanning Hosts:          %s" % (options.ScanHosts)
-
-               return
-
 
 def arp_network_range(iprange="%s" % n_range):
 
@@ -223,22 +200,26 @@ def arp_display(packet):
 #-----------------------------------------------------------
 
 
-def neighboradvertisement_packet_discovery(neighbor_adv_packet):
+def na_packet_discovery(neighbor_adv_packet):
 
   if neighbor_adv_packet.haslayer(IPv6) and neighbor_adv_packet.haslayer(ICMPv6ND_NA):
 
     print "Neighbor advertisement discovered: %s" % (neighbor_adv_packet.summary())
 
-    logging.info('Neighbor advertisement discovered: %s' % (neighbor_adv_packet.summary()))
+    print 'Neighbor solicitation source: %s, destination: %s ' % (neighbor_adv_packet[IPv6].src, neighbor_adv_packet[IPv6].dst)  
+
+    logging.info('Neighbor advertisement source: %s, destination: %s' % (neighbor_adv_packet[IPv6].src, neighbor_adv_packet[IPv6].dst))
 
 
-def neightborsolicitation_packet_discovery(neighbor_sol_packet):
+def ns_packet_discovery(neighbor_sol_packet):
 
   if neighbor_sol_packet.haslayer(IPv6) and neighbor_sol_packet.haslayer(ICMPv6ND_NS):
 
-    print "Neighbor solicitation discovered: %s" % (neighbor_sol_packet.summary())  
+    print "Neighbor solicitation discovered: %s" % (neighbor_sol_packet.summary())
 
-    logging.info('Neighbor solicitation discovered: %s' % (neighbor_sol_packet.summary()))    
+    print '[*]Neighbor solicitation source: %s, destination: %s' % (neighbor_sol_packet[IPv6].src, neighbor_sol_packet[IPv6].dst)  
+
+    logging.info('Neighbor solicitation source: %s, destination: %s' % (neighbor_sol_packet[IPv6].src, neighbor_sol_packet[IPv6].dst))
 
 
 def detect_deauth(deauth_packet):
@@ -262,8 +243,12 @@ def get_mac_gateway(ip_address):
 
     logging.info('Gateway Layer 2 address is: %s' % r[Ether].src)
 
+    global GATEWAY_MAC 
 
-def defenseive_arps(GATEWAY_IP, GATEWAY_MAC, victim_L3, victim_MAC):
+    GATEWAY_MAC = "%s" % r[Ether].src
+
+
+def defenseive_arps(GATEWAY_IP, GATEWAY_MAC):
 
     un_poison_victim = ARP()
     un_poison_victim.op = 2
@@ -277,12 +262,9 @@ def defenseive_arps(GATEWAY_IP, GATEWAY_MAC, victim_L3, victim_MAC):
     un_poison_gateway.pdst = gateway_ip
     un_poison_gateway.hwdst = victim_MAC
 
-    while 1:
-        try:
-            send(un_poison_victim)
-            send(un_poison_gateway)
-            time.sleep(2)
-        return
+    send(un_poison_victim)
+    send(un_poison_gateway)
+    time.sleep(2)
 
 
 def defensive_deauth(GATEWAY_MAC):
@@ -314,6 +296,22 @@ def monitor_traffic():
 
     print 'Traffic detected: ', packet
 
+def sniff_arps():
+
+  sniff(filter = "arp", prn = arp_display)
+
+def sniff_deauth():
+
+  sniff(iface="%s" % interface, prn = detect_deauth)
+
+def sniff_ns():
+
+  sniff(iface="%s" % interface, prn = ns_packet_discovery) 
+
+def sniff_na():
+
+  sniff(iface="%s" % interface, prn = na_packet_discovery)
+
 
 if __name__ == '__main__':
 
@@ -323,12 +321,10 @@ if __name__ == '__main__':
 
     arp_network_range()
 
-    #add multithreading
+    Thread(target = sniff_arps).start()
 
-    sniff(filter = "arp", prn = arp_display)
+    Thread(target = sniff_deauth).start()
 
-    sniff(iface="%s" % interface, prn = detect_deauth)
+    Thread(target = sniff_ns).start()
 
-    sniff(iface="%s" % interface, prn = neighborsolicitaion_packet_discovery)
-
-    sniff(iface="%s" % interface, prn = neighboradvertisement_packet_discovery)
+    Thread(target = sniff_na).start()
