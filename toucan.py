@@ -1,36 +1,3 @@
-#-------------------------
-# Toucan WIDS 
-# Author: Collin Sullivan
-# Year: 2017
-# Version: in the works!
-#-------------------------
-
-#--------------------------------------------------------------------------------------------------------------------------------
-# Monitors a LANs and will protect against spoofing attacks for MITM purposes
-# 1. Scans Network for Active Hosts
-# 2. Scans hosts for Layer 2 Addresses and will "attack back" when a MITM is discovered by correcting poisoned hosts
-# 3. Will send ALERT packet to DG (need to write protocol for this still)
-# Needs to be run as ROOT
-#--------------------------------------------------------------------------------------------------------------------------------
-
-#--------------------------------------------------------------------------------------------------------------------------------
-#                    GNU GENERAL PUBLIC LICENSE
-#                      Version 3, 29 June 2007
-
-# Copyright (C) 2007 Free Software Foundation, Inc. <http://fsf.org/>
-# Everyone is permitted to copy and distribute verbatim copies
-# of this license document, but changing it is not allowed.
-#--------------------------------------------------------------------------------------------------------------------------------
-
-
-#--------------------------------------------------------------------------------------------------------------------------------
-
-# TO DO:
-# 1. Option parser for fast use - but then you don't get to seee my toucan =( 
-# 2. Write alert protocol
-
-#--------------------------------------------------------------------------------------------------------------------------------
-
 import logging
 import socket, sys
 from scapy.all import *
@@ -50,65 +17,9 @@ import pyshark
 
 logging.basicConfig(filename='toucan.log',level=logging.DEBUG)
 
-toucan = """\033[34m
-                                                                                                        ............
-                                                                                                ..............-.-----.
-                                         .-.                                               ..--.........:---:-------:-
-                                           .--                                          .-:-........:-:-:---....``````.
-                                            `.-.`````````.-:-.                     .-//:-.....--:::----..
-                                            `..--..`````.-:+:-..-//:.           -+sdmmo-..-.--/::----.
-                                            .-///.--:/-.`..-:+///-.:/:.        +hm   h/.--+::-----.
-                                            .--/:::-.``-:+-.--/-/+/-----      hmdhssysy/://:::::.
-                                                    ````....-:---.``.``````+mddhddddmd//+oyds.
-                                            ..::--...-````....---...```````ommmmddmmmmmsdmmNs
-                                            ..-.-:-...``````..-::-:-`.````ommdddmmmmmdddmmmh.
-                                            ...-::...```````:--:/::```-+hmmddhdmmdyhhhhmmm+`
-                                           .---.-:...```````-.-::+--/sdmmdhhhyyddddhhddmmm-
-                                            -.`.--...``````.:/oshdddmddddhhyyyssdmdddddmmm.
-                                                .....````-+ydmmNmmmmddddmmhyyyssosydmdmmmmd.
-                                                `...```.+hmmmmmmmddddddmNNmhyyyssooosyhdmNNh`
-                                                .````.odddddddhdddddmmmNNNmdyyysosoosyyhddh/
-                                                   +dmdddddhddddhdddmmNNNmdyyysoossyyhddh+
-                                                 -ydddddddddddddmddhdmmdddddhyyyyyyhhddh+
-                              ``.`.`            dddddddddddddddhdhydmhhyhmmdhyyyhhddhy:
-                                .-:-..`.       dddddhdddddyssyhhyyyyddyhhhmmmmdddddds.```.----...````.-..
-                                 .-:+/:..    /dddddhdddho///osyyssssydddddmNNNNNNNms....:::--------.--:-.
-                                         /:-. :oyhhhhhhs+//:://ossssssyhdmmNNNNNNNd+---://:::----//-----:.
-                                            +::::++oss/ss+:::-:osysssssydmmNNNmds:-:/++o:-:::.-:--.-....
-                                            -yyyo++//+/+/ssy++/--:oossyyyhhdmmhss:...+o+/:::-.---........
-                                            ddhyyysysso+ysh:-:::::/+syhhhdhy+-`-:.`.s+/:----..........
-                                           +mdhhhyymyhshy+o+/:-.-:///+oss+:.`````::-s/::::+:::-
-                                           ymddhyhhdssy+:-:+ys/:..-/+/:---````````.:+/:---/---.
-                                           ddh+hdmhs+s+----/hhssoo+-://oyyo.````````-//:-:--..
-                                           dy+.hmdy+//::-:-ohhyyyoso+::yssy:..````````-/++:-..
-                                          :y+.-ydhs+---::.`:ooo++/:/sooh+yy/+::::-----:-+so+::-:-....``.........`
-                                          :/:`--/ys+-.-:.````....``.--:/sh+/::::-....-----...........`.-.-.-:```...```.-````--
-                                          ./.````ss/---/+-             :o/+o+o++/::::--::--.--..:--//-:-:::--...-.````..````.`
-                                                 oy+---::+-            ...-:/-://oooooos+ooo+/+//+//::/:--.
-                                                 .hs:-:+::+-            ....-.-````````....-..-..---...
-                                                  sy://so/:+-
-                                                  -h/ososo///.  
-                                                   oo+yyo/so/.``````.--...........-----.-.......`
-                                                   -s+yyso:+o-```````````````
-                                                    osssyoo:/o.               
-                                                    :o+osys+:o/                        .....-://oo/---////:.////:.////:.
-                                                    .s/oyyyo+/o-                        ``..-. TOUCAN WIRELESS INTRUSION DETECTION SYSTEM
-                                                     -+/+yho+o++.                            `+o///---////:.////:.////:.
-                                                     .+/+hhs//s:`                             
-                                                      //ohyys:oo`
-                                                      .s:ssyys:s:
-                                                        //+oyyy+/+
-                                                       `-o/oyyo+s+
-                                                        /ooshs:/s-                               
-                                                        .o:oyho/oo                               
-                                                        `//oshss+o                              
-                                                         ./+ys++os
-                                                          `.+/os++"                              "The world is a jungle in general, and the
-                                                           `-//:-.                               networking game contributes many animals."
-"""
+
 os.system("espeak 'Welcome to Toucan Network Defender'")
 
-print toucan
 
 time_current = time.strftime("%I:%M:%S")
 logging.info('%s' % time_current)
